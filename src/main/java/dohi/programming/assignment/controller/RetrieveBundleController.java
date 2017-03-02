@@ -2,7 +2,7 @@ package dohi.programming.assignment.controller;
 
 import dohi.programming.assignment.framework.BundleStorage;
 import dohi.programming.assignment.framework.V1;
-import dohi.programming.assignment.model.BasicResponse;
+import dohi.programming.assignment.model.Bundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,35 +16,38 @@ import org.springframework.web.context.request.async.DeferredResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * RetrieveBundleController takes care calls of type
+ * Method: GET Url: https://{host}/rest/v1/retrieve?id={bundleId}
+ *
+ *  Response body of type Bundle in JSON format
+ *
+ */
 @RestController
-@RequestMapping(V1.URI_DELETE_ABSOLUTE)
-public class DeleteBundle {
+@RequestMapping(V1.URI_RETRIEVE_ABSOLUTE)
+public class RetrieveBundleController {
 
     @Autowired
     BundleStorage bundleStorage;
 
-    @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DeferredResult<ResponseEntity<BasicResponse>> lookup(@RequestParam Map<String, String> parameters, HttpServletRequest request) {
-        DeferredResult<ResponseEntity<BasicResponse>> deferredResult = new DeferredResult<>();
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public DeferredResult<ResponseEntity<Bundle>> lookup(@RequestParam Map<String, String> parameters, HttpServletRequest request) {
+        DeferredResult<ResponseEntity<Bundle>> deferredResult = new DeferredResult<>();
         Map<String, String> requestParameters = new HashMap<>(parameters);
 
-        BasicResponse basicResponse = new BasicResponse();
+        Bundle bundleResponse = new Bundle();
         String bundleId = requestParameters.get("id");
+        //control the validity of requesting bundle id
         if (bundleId == null) {
-            basicResponse.setMessage("Invalid bundle id");
-            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.BAD_REQUEST));
+            deferredResult.setResult(new ResponseEntity<>(bundleResponse, HttpStatus.BAD_REQUEST));
+        //check if the bundle does not exists
         } else if (bundleStorage.getBundleMap().get(Integer.parseInt(bundleId)) == null) {
-            basicResponse.setMessage("Bundle not exist");
-            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.NOT_FOUND));
+            deferredResult.setResult(new ResponseEntity<>(bundleResponse, HttpStatus.NOT_FOUND));
+        //respond bundle
         } else {
-            bundleStorage.getBundleMap().remove(Integer.parseInt(bundleId));
-            basicResponse.setId(Integer.parseInt(bundleId));
-            basicResponse.setMessage("Bundle deleted");
-            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.OK));
+            deferredResult.setResult(new ResponseEntity<>(bundleStorage.getBundleMap().get(Integer.parseInt(bundleId)), HttpStatus.OK));
         }
 
         return deferredResult;
     }
-
 }

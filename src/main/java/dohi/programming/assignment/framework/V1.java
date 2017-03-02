@@ -1,5 +1,8 @@
 package dohi.programming.assignment.framework;
 
+/**
+ * Back-end URI collection
+ */
 public class V1 {
 
     public static final String URI_BASE = "/rest/v1/";

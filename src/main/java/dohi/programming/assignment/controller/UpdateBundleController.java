@@ -15,30 +15,45 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
-
+/**
+ * UpdateBundleController takes care calls of type
+ * Method: PUT Url: https://{host}/rest/v1/update body: Bundle in JSON format
+ *
+ *  Response body of type BasicResponse
+ *  JSON format
+ *  {
+ *      "id": {Integer},
+ *      "message": {String}
+ *  }
+ */
 @RestController
-@RequestMapping(V1.URI_CREATE_ABSOLUTE)
-public class CreateBundle {
+@RequestMapping(V1.URI_UPDATE_ABSOLUTE)
+public class UpdateBundleController {
     @Autowired
     BundleStorage bundleStorage;
 
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DeferredResult<ResponseEntity<BasicResponse>> createBundle(@RequestBody final Bundle bundleRequest,
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public DeferredResult<ResponseEntity<BasicResponse>> updateBundle(@RequestBody final Bundle bundleRequest,
                                                                       HttpServletRequest request) {
         DeferredResult<ResponseEntity<BasicResponse>> deferredResult = new DeferredResult<>();
         BasicResponse basicResponse = new BasicResponse();
+        //control the validity of requesting bundle id
         if (bundleRequest.getId() == null){
             basicResponse.setMessage("Invalid bundle id");
             deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.BAD_REQUEST));
+        //update bundle
         } else if (bundleStorage.getBundleMap().get(bundleRequest.getId()) != null) {
+            bundleStorage.getBundleMap().remove(bundleRequest.getId());
+            bundleStorage.addBundle(bundleRequest.getId(), bundleRequest);
             basicResponse.setId(bundleRequest.getId());
-            basicResponse.setMessage("Bundle already exists");
-            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.CONFLICT));
+            basicResponse.setMessage("Bundle updated");
+            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.OK));
+            //create response if the bundle does not exists
         } else {
             bundleStorage.addBundle(bundleRequest.getId(), bundleRequest);
             basicResponse.setId(bundleRequest.getId());
-            basicResponse.setMessage("Bundle created");
-            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.OK));
+            basicResponse.setMessage("Bundle not exist");
+            deferredResult.setResult(new ResponseEntity<>(basicResponse, HttpStatus.NOT_FOUND));
         }
 
         return deferredResult;
