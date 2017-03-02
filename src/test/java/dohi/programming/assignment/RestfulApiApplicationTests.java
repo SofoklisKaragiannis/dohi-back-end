@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dohi.programming.assignment.framework.V1;
 import dohi.programming.assignment.model.BasicResponse;
 import dohi.programming.assignment.model.Bundle;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,15 +38,20 @@ public class RestfulApiApplicationTests {
 
 	private MockMvc mockMvc;
 
+	private Authentication authentication;
+
 	@Before
 	public void setUp() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.ctx).build();
+		this.mockMvc = MockMvcBuilders
+				.webAppContextSetup(this.ctx)
+				.build();
 	}
 
 	/**
 	 * TestAllControllerStatusOk check all API calls in row
 	 * @throws Exception
 	 */
+	@Test
 	public void TestAllControllerStatusOk() throws Exception {
 		//create fake bundle
 		Bundle bundle = new Bundle();
@@ -53,10 +60,13 @@ public class RestfulApiApplicationTests {
 		bundle.setInfo("This circuit paths take you along a set of Northern scenic views.");
 		bundle.setImage("http://assets.example.com/bundle-1234567890.jpg");
 
+		String basicDigestHeaderValue = "Basic " + new String(Base64.encodeBase64(("user1:password1").getBytes()));
+
 		// mock bundle creation
 		MvcResult mvcResult = this.mockMvc.perform(
 				post(V1.URI_CREATE_ABSOLUTE).accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
 						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+						.header("Authorization", basicDigestHeaderValue)
 						.content(objectMapper.writeValueAsString(bundle))
 				)
 				.andExpect(request().asyncStarted())
@@ -73,6 +83,7 @@ public class RestfulApiApplicationTests {
 		mvcResult = this.mockMvc.perform(
 				get(V1.URI_RETRIEVE_ABSOLUTE).accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
 						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+						.header("Authorization", basicDigestHeaderValue)
 						.param("id", "1234567890"))
 				.andExpect(request().asyncStarted())
 				.andReturn();
@@ -93,6 +104,7 @@ public class RestfulApiApplicationTests {
 		mvcResult = this.mockMvc.perform(
 				put(V1.URI_UPDATE_ABSOLUTE).accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
 						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+						.header("Authorization", basicDigestHeaderValue)
 						.content(objectMapper.writeValueAsString(bundle))
 				)
 				.andExpect(request().asyncStarted())
@@ -110,6 +122,7 @@ public class RestfulApiApplicationTests {
 		mvcResult = this.mockMvc.perform(
 				delete(V1.URI_DELETE_ABSOLUTE).accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
 						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+						.header("Authorization", basicDigestHeaderValue)
 						.param("id", "1234567890"))
 				.andExpect(request().asyncStarted())
 				.andReturn();
