@@ -36,7 +36,7 @@ public class DeleteBundleController {
     BundleStorage bundleStorage;
 
     @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DeferredResult<ResponseEntity<BasicResponse>> lookup(@RequestParam Map<String, String> parameters, HttpServletRequest request) {
+    public DeferredResult<ResponseEntity<BasicResponse>> deleteBundle(@RequestParam Map<String, String> parameters, HttpServletRequest request) {
         DeferredResult<ResponseEntity<BasicResponse>> deferredResult = new DeferredResult<>();
         Map<String, String> requestParameters = new HashMap<>(parameters);
 

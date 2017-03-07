@@ -5,7 +5,7 @@ package dohi.programming.assignment.framework;
  */
 public class V1 {
 
-    public static final String URI_BASE = "/rest/v1/";
+    private static final String URI_BASE = "/rest/v1/";
 
     private static final String URI_CREATE = "create";
     public static final String URI_CREATE_ABSOLUTE = URI_BASE + URI_CREATE;
@@ -19,6 +19,8 @@ public class V1 {
     private static final String URI_RETRIEVE = "retrieve";
     public static final String URI_RETRIEVE_ABSOLUTE = URI_BASE + URI_RETRIEVE;
 
+    private static final String URI_RETRIEVE_ALL = "retrieveAll";
+    public static final String URI_RETRIEVE_ALL_ABSOLUTE = URI_BASE + URI_RETRIEVE_ALL;
     private V1() {
     }
 }

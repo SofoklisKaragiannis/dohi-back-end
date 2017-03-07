@@ -31,7 +31,7 @@ public class RetrieveBundleController {
     BundleStorage bundleStorage;
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DeferredResult<ResponseEntity<Bundle>> lookup(@RequestParam Map<String, String> parameters, HttpServletRequest request) {
+    public DeferredResult<ResponseEntity<Bundle>> lookupBundle(@RequestParam Map<String, String> parameters, HttpServletRequest request) {
         DeferredResult<ResponseEntity<Bundle>> deferredResult = new DeferredResult<>();
         Map<String, String> requestParameters = new HashMap<>(parameters);
 
