@@ -11,11 +11,11 @@
 # install dependencies
 mvn clean install 
 
-# run server will load at localhost:8080
-mvn spring-boot:run
-
 # working build
 mvn package
+
+# run server will load at localhost:8080
+java -jar target/restful-api-0.0.1-SNAPSHOT.jar
 ```
 
 In order to build and run project requires 
